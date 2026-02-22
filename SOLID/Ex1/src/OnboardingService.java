@@ -9,30 +9,26 @@ public class OnboardingService {
     public void registerFromRawInput(String raw) {
         System.out.println("INPUT: " + raw);
 
+        //Parse input
         StringParser parser = new StringParser();
-        Map<String, String> kv = parser.parse(raw);
+        Student st = parser.parse(raw);
 
-        
-        String name = kv.getOrDefault("name", "");
-        String email = kv.getOrDefault("email", "");
-        String phone = kv.getOrDefault("phone", "");
-        String program = kv.getOrDefault("program", "");
-
-
+        //Validate student
         ValidateStudent validator = new ValidateStudent();
-        List<String> errors = validator.validate(name, email, phone, program);
+        List<String> errors = validator.validate(st);
 
+        //log errors
         ErrorPrinter err = new ErrorPrinter();
         if(err.printErrors(errors)) return;
 
-
+        //Make a record
         String id = IdUtil.nextStudentId(db.count());
-        StudentRecord rec = new StudentRecord(id, name, email, phone, program);
+        StudentRecord rec = new StudentRecord(id, st);
 
+        //save to db
         db.save(rec);
 
-
-
+        //print success
         SuccessPrinter printer = new SuccessPrinter();
         printer.printSuccess(db.count(), rec);
     }

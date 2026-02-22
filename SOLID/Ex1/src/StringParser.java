@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class StringParser {
     
-    public Map<String, String> parse(String input) {
+    public Student parse(String input) {
         Map<String, String> kv = new LinkedHashMap<>();
         String[] parts = input.split(";");
         for(String pair : parts) {
@@ -13,7 +13,11 @@ public class StringParser {
                 kv.put(p[0].trim(), p[1].trim());
             }
         }
-        return kv;
+        String name = kv.getOrDefault("name", "");
+        String email = kv.getOrDefault("email", "");
+        String phone = kv.getOrDefault("phone", "");
+        String program = kv.getOrDefault("program", "");
+        return new Student(name, email, phone, program);
     }
     
 }
