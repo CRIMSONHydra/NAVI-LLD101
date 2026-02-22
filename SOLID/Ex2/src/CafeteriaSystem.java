@@ -13,28 +13,18 @@ public class CafeteriaSystem {
         StringBuilder out = new StringBuilder();
         out.append("Invoice# ").append(invId).append("\n");
 
-        double subtotal = 0.0;
-        for (OrderLine l : lines) {
-            MenuItem item = menu.get(l.itemId);
-            double lineTotal = item.price * l.qty;
-            subtotal += lineTotal;
-            out.append(String.format("- %s x%d = %.2f\n", item.name, l.qty, lineTotal));
-        }
+        Price priceCalculator = new Price(menu, lines, out, customerType);
+        //calc prices
+        priceCalculator.calculateSubtotal();
 
-        double taxPct = TaxRules.taxPercent(customerType);
-        double tax = subtotal * (taxPct / 100.0);
+        priceCalculator.calculateTax();
 
-        double discount = DiscountRules.discountAmount(customerType, subtotal, lines.size());
+        priceCalculator.calculateDiscount();
 
-        double total = subtotal + tax - discount;
+        priceCalculator.calculateTotal();
 
-        out.append(String.format("Subtotal: %.2f\n", subtotal));
-        out.append(String.format("Tax(%.0f%%): %.2f\n", taxPct, tax));
-        out.append(String.format("Discount: -%.2f\n", discount));
-        out.append(String.format("TOTAL: %.2f\n", total));
-
-        String printable = InvoiceFormatter.identityFormat(out.toString());
-        System.out.print(printable);
+        InvoiceFormatter invoice = new InvoiceFormatter();
+        String printable = invoice.print(out);
 
         store.save(invId, printable);
         System.out.println("Saved invoice: " + invId + " (lines=" + store.countLines(invId) + ")");

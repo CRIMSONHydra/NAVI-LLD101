@@ -1,4 +1,8 @@
 public class InvoiceFormatter {
     // pointless wrapper (smell)
-    public static String identityFormat(String s) { return s; }
+    public String print(StringBuilder out) {
+        String printable = out.toString();
+        System.out.print(printable);
+        return printable;
+    }
 }
